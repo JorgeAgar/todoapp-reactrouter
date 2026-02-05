@@ -10,15 +10,38 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Tasks() {
   return (
     <div>
       <SidebarProvider>
-        <AppSidebar />
-        <main className="w-full h-full">
+        <AppSidebar/>
+        <main className="w-full h-full bg-black">
           <Header />
-          <div className="bg-yellow-200 w-full">tasks</div>
+          <div className="bg-black w-full h-full flex items-center justify-center p-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Card Title</CardTitle>
+                <CardDescription>Card Description</CardDescription>
+                <CardAction>Card Action</CardAction>
+              </CardHeader>
+              <CardContent>
+                <p>Card Content</p>
+              </CardContent>
+              <CardFooter>
+                <p>Card Footer</p>
+              </CardFooter>
+            </Card>
+          </div>
         </main>
       </SidebarProvider>
     </div>
