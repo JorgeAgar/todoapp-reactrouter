@@ -12,50 +12,43 @@ import {
 
 export default function Tasks() {
   return (
-    <div>
-        <main className="w-full h-full bg-black">
-          <Header />
-          <div className="bg-black w-full h-full flex items-center justify-center p-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Card Title</CardTitle>
-                <CardDescription>Card Description</CardDescription>
-                <CardAction>Card Action</CardAction>
-              </CardHeader>
-              <CardContent>
-                <p>Card Content</p>
-              </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
-            </Card>
-          </div>
-        </main>
-    </div>
+    <main className="w-full h-svh bg-black">
+      <Header />
+      <div className="bg-black w-full h-full flex items-center justify-center p-4">
+        <Card className="dark w-xl">
+          <CardHeader>
+            <CardTitle>Group Name</CardTitle>
+            <CardDescription>Group Description (optional)</CardDescription>
+            <CardAction>Add Task</CardAction>
+          </CardHeader>
+          <CardContent>
+            <p>Tasks pending</p>
+          </CardContent>
+          <CardFooter>
+            <p>Tasks completed</p>
+          </CardFooter>
+        </Card>
+      </div>
+    </main>
   );
 }
 
 function Header() {
-
   return (
     <header className="w-full flex flex-row justify-between items-center bg-black h-12 px-3">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-white"
-      >
+      <Button variant="ghost" size="icon" className="text-white hover:bg-neutral-900 hover:text-white hover:transition-colors">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-7"
+          className="size-6"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M3.75 5.25h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5m-16.5 4.5h16.5"
+            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
           />
         </svg>
       </Button>
