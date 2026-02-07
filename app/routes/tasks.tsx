@@ -1,16 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarProvider,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import {
   Card,
   CardAction,
   CardContent,
@@ -23,8 +13,6 @@ import {
 export default function Tasks() {
   return (
     <div>
-      <SidebarProvider>
-        <AppSidebar/>
         <main className="w-full h-full bg-black">
           <Header />
           <div className="bg-black w-full h-full flex items-center justify-center p-4">
@@ -43,13 +31,11 @@ export default function Tasks() {
             </Card>
           </div>
         </main>
-      </SidebarProvider>
     </div>
   );
 }
 
 function Header() {
-  const { toggleSidebar } = useSidebar();
 
   return (
     <header className="w-full flex flex-row justify-between items-center bg-black h-12 px-3">
@@ -57,7 +43,6 @@ function Header() {
         variant="ghost"
         size="icon"
         className="text-white"
-        onClick={toggleSidebar}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -79,23 +64,5 @@ function Header() {
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
     </header>
-  );
-}
-
-function AppSidebar() {
-  return (
-    <Sidebar side="left" collapsible="offcanvas">
-      <SidebarContent className="bg-black">
-        <SidebarGroup>
-          <Button
-            variant={"ghost"}
-            className="text-white"
-            onClick={() => console.log("test")}
-          >
-            Test
-          </Button>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
   );
 }
