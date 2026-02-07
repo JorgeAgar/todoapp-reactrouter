@@ -9,6 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 export default function Tasks() {
   return (
@@ -19,7 +24,31 @@ export default function Tasks() {
           <CardHeader>
             <CardTitle>Group Name</CardTitle>
             <CardDescription>Group Description (optional)</CardDescription>
-            <CardAction>Add Task</CardAction>
+            <CardAction>
+              <HoverCard openDelay={1000} closeDelay={50}>
+                <HoverCardTrigger>
+              <Button variant="ghost" size="icon-sm" className="rounded-full" onClick={() => {console.log("add task")}}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </Button>
+                </HoverCardTrigger>
+                <HoverCardContent className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5" side="right">
+                  Add task
+                </HoverCardContent>
+              </HoverCard>
+            </CardAction>
           </CardHeader>
           <CardContent>
             <p>Tasks pending</p>
@@ -36,7 +65,11 @@ export default function Tasks() {
 function Header() {
   return (
     <header className="w-full flex flex-row justify-between items-center bg-black h-12 px-3">
-      <Button variant="ghost" size="icon" className="text-white hover:bg-neutral-900 hover:text-white hover:transition-colors">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-white hover:bg-neutral-900 hover:text-white hover:transition-colors"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
