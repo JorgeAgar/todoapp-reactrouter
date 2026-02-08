@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardAction,
@@ -14,6 +15,14 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 
 export default function Tasks() {
   return (
@@ -27,31 +36,54 @@ export default function Tasks() {
             <CardAction>
               <HoverCard openDelay={1000} closeDelay={50}>
                 <HoverCardTrigger>
-              <Button variant="ghost" size="icon-sm" className="rounded-full" onClick={() => {console.log("add task")}}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-              </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="rounded-full"
+                    onClick={() => {
+                      console.log("add task");
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 4.5v15m7.5-7.5h-15"
+                      />
+                    </svg>
+                  </Button>
                 </HoverCardTrigger>
-                <HoverCardContent className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5" side="right">
+                <HoverCardContent
+                  className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
+                  side="right"
+                >
                   Add task
                 </HoverCardContent>
               </HoverCard>
             </CardAction>
           </CardHeader>
           <CardContent>
-            <p>Tasks pending</p>
+            <ul className="flex flex-col gap-2">
+              <li>
+                <TaskCard
+                  title="Sample Task"
+                  description="This is a sample task description."
+                />
+              </li>
+              <li>
+              <TaskCard
+                  title="Sample Task 2"
+                  description="This is a sample task description 2."
+                />
+              </li>
+            </ul>
           </CardContent>
           <CardFooter>
             <p>Tasks completed</p>
@@ -90,5 +122,43 @@ function Header() {
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
     </header>
+  );
+}
+
+function TaskCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <Item size="xs" className="group">
+      <ItemMedia variant="image">
+        <Checkbox className="size-5" />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>{title}</ItemTitle>
+        <ItemDescription>{description}</ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <Button variant="ghost" size="icon-xs" className="-translate-y-3.5 group-hover:visible invisible">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-4"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"
+            />
+          </svg>
+        </Button>
+      </ItemActions>
+    </Item>
   );
 }
