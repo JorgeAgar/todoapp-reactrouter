@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,8 +33,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 export default function Tasks() {
+  const [open, setOpen] = useState(false); // Tasks completed collapsible state
+
   return (
     <main className="w-full h-svh bg-black">
       <Header />
@@ -95,7 +103,30 @@ export default function Tasks() {
             </ul>
           </CardContent>
           <CardFooter>
-            <p>Tasks completed</p>
+            <Collapsible open={open} onOpenChange={setOpen} className="w-full">
+              <CollapsibleTrigger className="flex flex-row justify-between items-center w-full text-neutral-300">
+                Tasks completed
+                <span>{open ? chevronUp : chevronDown}</span>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <ul className="flex flex-col gap-2 mt-2">
+                  <li>
+                    <TaskCard
+                      title="Sample Task 3"
+                      description="This is a sample task description. 3"
+                      completed={true}
+                    />
+                  </li>
+                  <li>
+                    <TaskCard
+                      title="Sample Task 4"
+                      description="This is a sample task description 4."
+                      completed={true}
+                    />
+                  </li>
+                </ul>
+              </CollapsibleContent>
+            </Collapsible>
           </CardFooter>
         </Card>
       </div>
@@ -137,17 +168,30 @@ function Header() {
 function TaskCard({
   title,
   description,
+  completed = false,
 }: {
   title: string;
   description: string;
+  completed?: boolean;
 }) {
+  const [checked, setChecked] = useState(completed);
+
   return (
     <Item size="xs" className="group">
       <ItemMedia variant="image">
-        <Checkbox className="size-5" onCheckedChange={(checked) => console.log("Task ", title, " set to ", checked)} />
+        <Checkbox
+          className="size-5"
+          onCheckedChange={(checkedState) => {
+            setChecked(!checked);
+            console.log("Task ", title, " set to ", checkedState);
+          }}
+          checked={checked}
+        />
       </ItemMedia>
       <ItemContent>
-        <ItemTitle>{title}</ItemTitle>
+        <ItemTitle className={completed ? "line-through" : ""}>
+          {title}
+        </ItemTitle>
         <ItemDescription>{description}</ItemDescription>
       </ItemContent>
       <ItemActions>
@@ -176,11 +220,18 @@ function TaskCard({
           </DropdownMenuTrigger>
           <DropdownMenuContent className="dark">
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => console.log("editing task ", title)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => console.log("editing task ", title)}
+              >
+                Edit
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem variant="destructive" onClick={() => console.log("deleted task ", title)}>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => console.log("deleted task ", title)}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -204,3 +255,37 @@ function TaskCard({
     </Item>
   );
 }
+
+const chevronDown = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="size-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="m19.5 8.25-7.5 7.5-7.5-7.5"
+    />
+  </svg>
+);
+
+const chevronUp = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="size-5"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="m4.5 15.75 7.5-7.5 7.5 7.5"
+    />
+  </svg>
+);
