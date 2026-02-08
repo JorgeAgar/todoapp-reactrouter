@@ -152,7 +152,7 @@ function TaskCard({
       </ItemContent>
       <ItemActions>
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
               size="icon-xs"
