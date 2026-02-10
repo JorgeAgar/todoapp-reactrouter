@@ -8,6 +8,12 @@ export const auth = betterAuth({
         provider: "libsql", // or "mysql", "sqlite"
         schema: schema
     }),
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // 5 minutes
+      }
+    },
   emailAndPassword: {
     enabled: true,
   },
