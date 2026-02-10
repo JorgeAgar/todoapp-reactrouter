@@ -43,6 +43,16 @@ import { authClient } from "~/lib/auth-client";
 export default function Tasks() {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
 
+  const { 
+        data: session, 
+        isPending, //loading state
+        error, //error object
+        refetch //refetch the session
+    } = authClient.useSession();
+  if (isPending) console.log(isPending);
+  if (error) console.log(error);
+  if (session) console.log(session);
+
   return (
     <main className="w-full h-svh bg-black">
       <Header />
