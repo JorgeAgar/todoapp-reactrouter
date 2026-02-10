@@ -38,6 +38,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { authClient } from "~/lib/auth-client";
 
 export default function Tasks() {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
@@ -179,7 +180,7 @@ export function AvatarDropdown() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive">
+          <DropdownMenuItem variant="destructive" onClick={async () => await authClient.signOut()}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
