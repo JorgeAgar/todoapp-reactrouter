@@ -6,7 +6,7 @@ const authToken: string = process.env.TURSO_AUTH_TOKEN!;
 
 export default defineConfig({
   out: './drizzle',
-  schema: './src/db/schema.ts',
+  schema: './drizzle/src/db/schema.ts',
   dialect: 'turso',
   dbCredentials: {
     url: url,
