@@ -39,19 +39,36 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { authClient } from "~/lib/auth-client";
+import { type ClientLoaderFunctionArgs } from "react-router";
+import { db } from "drizzle/src/index";
+import { task } from "drizzle/src/db/schema";
+import { eq } from "drizzle-orm";
+import type { Route } from "./+types/tasks";
 
-export default function Tasks() {
+export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
+  const { data: session, error } = await authClient.getSession();
+
+  if (error || !session) {
+    console.error(error);
+    throw new Response("Unauthorized", { status: 401 });
+  }
+
+  const tasks = await db.select().from(task).where(eq(task.userId, session.user.id));
+  if (tasks) console.log("Queried tasks");
+
+  return { tasks, user: session.user };
+}
+
+export function HydrateFallback() {
+  return <div>Loading tasks...</div>;
+}
+
+export default function Tasks({ loaderData }: Route.ComponentProps) {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
+  const { tasks, user } = loaderData;
 
-  const { 
-        data: session, 
-        isPending, //loading state
-        error, //error object
-        refetch //refetch the session
-    } = authClient.useSession();
-  if (isPending) console.log(isPending);
-  if (error) console.log(error);
-  if (session) console.log(session);
+  console.log("Loaded tasks for user:", user);
+  console.log("Tasks:", tasks);
 
   return (
     <main className="w-full h-svh bg-black">
@@ -225,6 +242,7 @@ function TaskCard({
   const [checked, setChecked] = useState(completed);
 
   return (
+    // @ts-expect-error I think it expects types from radix ui but i used base ui (from shadcn)
     <Item size="xs" className="group">
       <ItemMedia variant="image">
         <Checkbox
