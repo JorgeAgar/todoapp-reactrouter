@@ -15,7 +15,7 @@ import {
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { authClient } from "~/lib/auth-client";
-import { Form } from "react-router";
+import { Form, redirect } from "react-router";
 import { useState } from "react";
 
 export function LoginForm({
@@ -37,7 +37,7 @@ export function LoginForm({
         },
         onSuccess: (ctx) => {
           console.log("User signed in successfully", ctx.data);
-          //TODO: redirect to tasks
+          redirect("/tasks");
         },
         onError: (ctx) => {
           alert(ctx.error);
