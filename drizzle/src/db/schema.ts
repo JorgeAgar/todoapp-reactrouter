@@ -70,7 +70,7 @@ export const task = sqliteTable("task", {
 	index("task_userId_idx").on(table.userId),
 ]);
 
-export const subTask = sqliteTable("task", {
+export const subTask = sqliteTable("subTask", {
 	id: text().primaryKey().notNull(),
 	title: text().notNull(),
 	description: text(),
