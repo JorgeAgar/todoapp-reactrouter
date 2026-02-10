@@ -56,9 +56,39 @@ export const verification = sqliteTable("verification", {
 	index("verification_identifier_idx").on(table.identifier),
 ]);
 
+export const task = sqliteTable("task", {
+	id: text().primaryKey().notNull(),
+	title: text().notNull(),
+	description: text(),
+	completedAt: numeric(),
+	createdAt: numeric().notNull(),
+	updatedAt: numeric().notNull(),
+	deadline: numeric(),
+	userId: text().notNull().references(() => user.id, { onDelete: "cascade" } ),
+},
+(table) => [
+	index("task_userId_idx").on(table.userId),
+]);
+
+export const subTask = sqliteTable("task", {
+	id: text().primaryKey().notNull(),
+	title: text().notNull(),
+	description: text(),
+	completedAt: numeric(),
+	createdAt: numeric().notNull(),
+	updatedAt: numeric().notNull(),
+	deadline: numeric(),
+	parentTaskId: text().notNull().references(() => task.id, { onDelete: "cascade" } ),
+},
+(table) => [
+	index("subTask_parentTaskId_idx").on(table.parentTaskId),
+]);
+
 export const schema = {
 	user,
 	session,
 	account,
 	verification,
+	task,
+	subTask,
 }
