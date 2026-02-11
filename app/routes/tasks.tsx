@@ -38,29 +38,24 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { auth } from "~/lib/auth";
 import { authClient } from "~/lib/auth-client";
-import { type ClientLoaderFunctionArgs } from "react-router";
 import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
 
-export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
-  const { data: session, error } = await authClient.getSession();
+export async function loader({ request }: { request: Request }) {
+  const session = await auth.api.getSession({ headers: request.headers });
 
-  if (error || !session) {
-    console.error(error);
-    throw new Response("Unauthorized", { status: 401 });
-  }
+  // console.log("request: ", request);
+
+  if(!session) throw new Response("Unauthorized", { status: 401 });
 
   const tasks = await db.select().from(task).where(eq(task.userId, session.user.id));
   if (tasks) console.log("Queried tasks");
 
   return { tasks, user: session.user };
-}
-
-export function HydrateFallback() {
-  return <div>Loading tasks...</div>;
 }
 
 export default function Tasks({ loaderData }: Route.ComponentProps) {
