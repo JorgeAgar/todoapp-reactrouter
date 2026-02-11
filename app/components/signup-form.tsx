@@ -1,4 +1,4 @@
-import { Form, redirect } from "react-router";
+import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -27,6 +27,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         email,
         password,
         name,
+        callbackURL: `${window.location.origin}/tasks`
       },
       {
         onRequest: (ctx) => {
@@ -34,7 +35,6 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         },
         onSuccess: (ctx) => {
           console.log("User signed up successfully", ctx.data);
-          redirect("/tasks");
         },
         onError: (ctx) => {
           alert(ctx.error);

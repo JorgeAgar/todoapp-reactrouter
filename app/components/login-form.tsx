@@ -15,7 +15,7 @@ import {
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { authClient } from "~/lib/auth-client";
-import { Form, redirect } from "react-router";
+import { Form } from "react-router";
 import { useState } from "react";
 
 export function LoginForm({
@@ -30,6 +30,7 @@ export function LoginForm({
       {
         email,
         password,
+        callbackURL: `${window.location.origin}/tasks`
       },
       {
         onRequest: (ctx) => {
@@ -37,7 +38,6 @@ export function LoginForm({
         },
         onSuccess: (ctx) => {
           console.log("User signed in successfully", ctx.data);
-          redirect("/tasks");
         },
         onError: (ctx) => {
           alert(ctx.error);
