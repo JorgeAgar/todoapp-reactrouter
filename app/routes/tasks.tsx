@@ -44,6 +44,7 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
+import { useNavigate } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
@@ -186,6 +187,8 @@ function Header() {
 }
 
 export function AvatarDropdown() {
+  let navigate = useNavigate();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -202,7 +205,7 @@ export function AvatarDropdown() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive" onClick={async () => await authClient.signOut()}>
+          <DropdownMenuItem variant="destructive" onClick={async () => await authClient.signOut({fetchOptions: {onSuccess: () => navigate("/")}})}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
