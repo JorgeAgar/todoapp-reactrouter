@@ -83,6 +83,11 @@ export async function loader({ request }: { request: Request }) {
   return { tasks, user: session.user };
 }
 
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  console.log("Form data: ", formData);
+}
+
 export default function Tasks({ loaderData }: Route.ComponentProps) {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
   const { tasks, user } = loaderData;
@@ -136,6 +141,8 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                             <Input
                               id="title"
                               autoComplete="off"
+                              required
+                              name="title"
                             />
                             {/* <FieldDescription>
                               This appears on invoices and emails.
@@ -146,6 +153,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                             <Input
                               id="description"
                               autoComplete="off"
+                              name="description"
                             />
                             {/* <FieldError>Choose another username.</FieldError> */}
                           </Field>
