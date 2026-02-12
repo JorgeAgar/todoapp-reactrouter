@@ -64,16 +64,16 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
   const { tasks, user } = loaderData;
 
   console.log("Loaded tasks for user:", user);
-  console.log("Tasks:", tasks);
+  console.log("Tasks:", tasks); 
 
   return (
     <main className="w-full h-svh bg-black">
       <Header />
       <div className="bg-black w-full h-full flex items-center justify-center p-4">
         <Card className="dark w-xl">
-          <CardHeader>
-            <CardTitle>Group Name</CardTitle>
-            <CardDescription>Group Description (optional)</CardDescription>
+          <CardHeader className="flex flex-row justify-between items-center content-center">
+            <CardTitle>Your Tasks</CardTitle>
+            {/* <CardDescription>Group Description (optional)</CardDescription> */}
             <CardAction>
               <HoverCard openDelay={1000} closeDelay={50}>
                 <HoverCardTrigger>
@@ -112,18 +112,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
           </CardHeader>
           <CardContent>
             <ul className="flex flex-col gap-2">
-              <li>
-                <TaskCard
-                  title="Sample Task"
-                  description="This is a sample task description."
-                />
-              </li>
-              <li>
-                <TaskCard
-                  title="Sample Task 2"
-                  description="This is a sample task description 2."
-                />
-              </li>
+              {tasks.filter((task) => !task.completedAt).map((task) => <li key={task.id}><TaskCard title={task.title} description={task.description || ""} /></li>)}
             </ul>
           </CardContent>
           <CardFooter>
@@ -134,20 +123,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <ul className="flex flex-col gap-2 mt-2">
-                  <li>
-                    <TaskCard
-                      title="Sample Task 3"
-                      description="This is a sample task description. 3"
-                      completed={true}
-                    />
-                  </li>
-                  <li>
-                    <TaskCard
-                      title="Sample Task 4"
-                      description="This is a sample task description 4."
-                      completed={true}
-                    />
-                  </li>
+                  {tasks.filter((task) => task.completedAt != null).map((task) => <li key={task.id}><TaskCard title={task.title} description={task.description || ""} completed /></li>)}
                 </ul>
               </CollapsibleContent>
             </Collapsible>
@@ -256,7 +232,7 @@ function TaskCard({
         <ItemTitle className={completed ? "line-through" : ""}>
           {title}
         </ItemTitle>
-        <ItemDescription>{description}</ItemDescription>
+        {description && <ItemDescription>{description}</ItemDescription>}
       </ItemContent>
       <ItemActions>
         <DropdownMenu>
