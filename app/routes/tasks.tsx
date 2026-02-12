@@ -38,22 +38,46 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldTitle,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input"
 import { auth } from "~/lib/auth";
 import { authClient } from "~/lib/auth-client";
 import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
-import { useNavigate } from "react-router";
+import { useNavigate, useFetcher } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
 
   // console.log("request: ", request);
 
-  if(!session) throw new Response("Unauthorized", { status: 401 });
+  if (!session) throw new Response("Unauthorized", { status: 401 });
 
-  const tasks = await db.select().from(task).where(eq(task.userId, session.user.id));
+  const tasks = await db
+    .select()
+    .from(task)
+    .where(eq(task.userId, session.user.id));
   if (tasks) console.log("Queried tasks");
 
   return { tasks, user: session.user };
@@ -62,9 +86,10 @@ export async function loader({ request }: { request: Request }) {
 export default function Tasks({ loaderData }: Route.ComponentProps) {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
   const { tasks, user } = loaderData;
+  let fetcher = useFetcher();
 
   console.log("Loaded tasks for user:", user);
-  console.log("Tasks:", tasks); 
+  console.log("Tasks:", tasks);
 
   return (
     <main className="w-full h-svh bg-black">
@@ -77,29 +102,59 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             <CardAction>
               <HoverCard openDelay={1000} closeDelay={50}>
                 <HoverCardTrigger>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    className="rounded-full"
-                    onClick={() => {
-                      console.log("add task");
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="size-6"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                      />
-                    </svg>
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="rounded-full"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="size-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 4.5v15m7.5-7.5h-15"
+                          />
+                        </svg>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="dark">
+                      <DialogHeader className="text-white">
+                        <DialogTitle>Add Task</DialogTitle>
+                      </DialogHeader>
+                      <fetcher.Form method="post" className="flex flex-col gap-8 items-start">
+                        <FieldGroup className="text-white">
+                          <Field>
+                            <FieldLabel htmlFor="title">Title</FieldLabel>
+                            <Input
+                              id="title"
+                              autoComplete="off"
+                            />
+                            {/* <FieldDescription>
+                              This appears on invoices and emails.
+                            </FieldDescription> */}
+                          </Field>
+                          <Field>
+                            <FieldLabel htmlFor="description">Description (optional)</FieldLabel>
+                            <Input
+                              id="description"
+                              autoComplete="off"
+                              aria-invalid
+                            />
+                            {/* <FieldError>Choose another username.</FieldError> */}
+                          </Field>
+                        </FieldGroup>
+                        <Button type="submit" className="self-end">Add Task</Button>
+                      </fetcher.Form>
+                    </DialogContent>
+                  </Dialog>
                 </HoverCardTrigger>
                 <HoverCardContent
                   className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
@@ -112,7 +167,16 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
           </CardHeader>
           <CardContent>
             <ul className="flex flex-col gap-2">
-              {tasks.filter((task) => !task.completedAt).map((task) => <li key={task.id}><TaskCard title={task.title} description={task.description || ""} /></li>)}
+              {tasks
+                .filter((task) => !task.completedAt)
+                .map((task) => (
+                  <li key={task.id}>
+                    <TaskCard
+                      title={task.title}
+                      description={task.description || ""}
+                    />
+                  </li>
+                ))}
             </ul>
           </CardContent>
           <CardFooter>
@@ -123,7 +187,17 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <ul className="flex flex-col gap-2 mt-2">
-                  {tasks.filter((task) => task.completedAt != null).map((task) => <li key={task.id}><TaskCard title={task.title} description={task.description || ""} completed /></li>)}
+                  {tasks
+                    .filter((task) => task.completedAt != null)
+                    .map((task) => (
+                      <li key={task.id}>
+                        <TaskCard
+                          title={task.title}
+                          description={task.description || ""}
+                          completed
+                        />
+                      </li>
+                    ))}
                 </ul>
               </CollapsibleContent>
             </Collapsible>
@@ -181,7 +255,14 @@ export function AvatarDropdown() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive" onClick={async () => await authClient.signOut({fetchOptions: {onSuccess: () => navigate("/")}})}>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={async () =>
+              await authClient.signOut({
+                fetchOptions: { onSuccess: () => navigate("/") },
+              })
+            }
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
