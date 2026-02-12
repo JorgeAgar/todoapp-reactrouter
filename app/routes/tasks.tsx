@@ -146,7 +146,6 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                             <Input
                               id="description"
                               autoComplete="off"
-                              aria-invalid
                             />
                             {/* <FieldError>Choose another username.</FieldError> */}
                           </Field>
