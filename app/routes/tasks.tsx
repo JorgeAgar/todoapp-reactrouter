@@ -83,42 +83,13 @@ export async function loader({ request }: { request: Request }) {
   return { tasks, user: session.user };
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  console.log("Form data: ", formData);
-
-  type NewTask = typeof task.$inferInsert;
-
-  const session = await auth.api.getSession({ headers: request.headers });
-  if (!session) throw new Response("Unauthorized", { status: 401 });
-
-  const now = Date.now().toString();
-
-  const newTask: NewTask = {
-    title: formData.get("title") as string,
-    description: (formData.get("description") as string) || null,
-    userId: session.user.id,
-    createdAt: now,
-    updatedAt: now,
-    completedAt: null,
-    deadline: null,
-    id: crypto.randomUUID(),
-  };
-
-  console.log("Inserting new task: ", newTask);
-
-  await db.insert(task).values(newTask);
-
-  return null;
-}
-
 export default function Tasks({ loaderData }: Route.ComponentProps) {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
   const { tasks, user } = loaderData;
   let fetcher = useFetcher();
 
-  console.log("Loaded tasks for user:", user);
-  console.log("Tasks:", tasks);
+  // console.log("Loaded tasks for user:", user);
+  // console.log("Tasks:", tasks);
 
   return (
     <main className="w-full h-svh bg-black">
@@ -132,7 +103,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
               <HoverCard openDelay={1000} closeDelay={50}>
                 <HoverCardTrigger>
                   <Dialog>
-                    <DialogTrigger>
+                    <DialogTrigger asChild>
                       <Button
                         variant="ghost"
                         size="icon-sm"
@@ -158,7 +129,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                       <DialogHeader className="text-white">
                         <DialogTitle>Add Task</DialogTitle>
                       </DialogHeader>
-                      <fetcher.Form method="post" className="flex flex-col gap-8 items-start">
+                      <fetcher.Form method="post" className="flex flex-col gap-8 items-start" action="/action/tasks">
                         <FieldGroup className="text-white">
                           <Field>
                             <FieldLabel htmlFor="title">Title</FieldLabel>
