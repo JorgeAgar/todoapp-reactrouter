@@ -58,7 +58,7 @@ import {
   FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
 import { auth } from "~/lib/auth";
 import { authClient } from "~/lib/auth-client";
 import { db } from "drizzle/src/index";
@@ -84,9 +84,9 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export default function Tasks({ loaderData }: Route.ComponentProps) {
-  const [open, setOpen] = useState(false); // Tasks completed collapsible state
   const { tasks, user } = loaderData;
   let fetcher = useFetcher();
+  // console.log("fetcher: ", fetcher);
 
   // console.log("Loaded tasks for user:", user);
   // console.log("Tasks:", tasks);
@@ -129,7 +129,12 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                       <DialogHeader className="text-white">
                         <DialogTitle>Add Task</DialogTitle>
                       </DialogHeader>
-                      <fetcher.Form method="post" className="flex flex-col gap-8 items-start" action="/action/tasks">
+                      <fetcher.Form
+                        method="post"
+                        className="flex flex-col gap-8 items-start"
+                        onSubmit={() => console.log("submitted form")}
+                        action="/action/tasks"
+                      >
                         <FieldGroup className="text-white">
                           <Field>
                             <FieldLabel htmlFor="title">Title</FieldLabel>
@@ -144,7 +149,9 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                             </FieldDescription> */}
                           </Field>
                           <Field>
-                            <FieldLabel htmlFor="description">Description (optional)</FieldLabel>
+                            <FieldLabel htmlFor="description">
+                              Description (optional)
+                            </FieldLabel>
                             <Input
                               id="description"
                               autoComplete="off"
@@ -153,7 +160,9 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                             {/* <FieldError>Choose another username.</FieldError> */}
                           </Field>
                         </FieldGroup>
-                        <Button type="submit" className="self-end">Add Task</Button>
+                        <Button type="submit" className="self-end">
+                          Add Task
+                        </Button>
                       </fetcher.Form>
                     </DialogContent>
                   </Dialog>
@@ -182,31 +191,49 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             </ul>
           </CardContent>
           <CardFooter>
-            <Collapsible open={open} onOpenChange={setOpen} className="w-full">
-              <CollapsibleTrigger className="flex flex-row justify-between items-center w-full text-neutral-300">
-                Tasks completed
-                <span>{open ? chevronUp : chevronDown}</span>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <ul className="flex flex-col gap-2 mt-2">
-                  {tasks
-                    .filter((task) => task.completedAt != null)
-                    .map((task) => (
-                      <li key={task.id}>
-                        <TaskCard
-                          title={task.title}
-                          description={task.description || ""}
-                          completed
-                        />
-                      </li>
-                    ))}
-                </ul>
-              </CollapsibleContent>
-            </Collapsible>
+            <TasksCompleted tasks={tasks} />
           </CardFooter>
         </Card>
       </div>
     </main>
+  );
+}
+
+type tasks = {
+  id: string;
+  title: string;
+  description: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deadline: string | null;
+  userId: string;
+};
+function TasksCompleted({ tasks }: { tasks: tasks[] }) {
+  const [open, setOpen] = useState(false); // Tasks completed collapsible state
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} className="w-full">
+      <CollapsibleTrigger className="flex flex-row justify-between items-center w-full text-neutral-300">
+        Tasks completed
+        <span>{open ? chevronUp : chevronDown}</span>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <ul className="flex flex-col gap-2 mt-2">
+          {tasks
+            .filter((task) => task.completedAt != null)
+            .map((task) => (
+              <li key={task.id}>
+                <TaskCard
+                  title={task.title}
+                  description={task.description || ""}
+                  completed
+                />
+              </li>
+            ))}
+        </ul>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 
