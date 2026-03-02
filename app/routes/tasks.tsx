@@ -42,6 +42,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -184,9 +185,11 @@ function AddTaskDialog() {
               {/* <FieldError>Choose another username.</FieldError> */}
             </Field>
           </FieldGroup>
-          <Button type="submit" className="self-end">
-            Add Task
-          </Button>
+          <DialogFooter className="flex flex-row justify-end w-full">
+            <Button type="submit" className="self-end">
+              Add Task
+            </Button>
+          </DialogFooter>
         </fetcher.Form>
       </DialogContent>
     </Dialog>
