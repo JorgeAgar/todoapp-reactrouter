@@ -85,8 +85,6 @@ export async function loader({ request }: { request: Request }) {
 
 export default function Tasks({ loaderData }: Route.ComponentProps) {
   const { tasks, user } = loaderData;
-  let fetcher = useFetcher();
-  // console.log("fetcher: ", fetcher);
 
   // console.log("Loaded tasks for user:", user);
   // console.log("Tasks:", tasks);
@@ -102,70 +100,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             <CardAction>
               <HoverCard openDelay={1000} closeDelay={50}>
                 <HoverCardTrigger>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="rounded-full"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="size-6"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M12 4.5v15m7.5-7.5h-15"
-                          />
-                        </svg>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="dark">
-                      <DialogHeader className="text-white">
-                        <DialogTitle>Add Task</DialogTitle>
-                      </DialogHeader>
-                      <fetcher.Form
-                        method="post"
-                        className="flex flex-col gap-8 items-start"
-                        onSubmit={() => console.log("submitted form")}
-                        action="/action/tasks"
-                      >
-                        <FieldGroup className="text-white">
-                          <Field>
-                            <FieldLabel htmlFor="title">Title</FieldLabel>
-                            <Input
-                              id="title"
-                              autoComplete="off"
-                              required
-                              name="title"
-                            />
-                            {/* <FieldDescription>
-                              This appears on invoices and emails.
-                            </FieldDescription> */}
-                          </Field>
-                          <Field>
-                            <FieldLabel htmlFor="description">
-                              Description (optional)
-                            </FieldLabel>
-                            <Input
-                              id="description"
-                              autoComplete="off"
-                              name="description"
-                            />
-                            {/* <FieldError>Choose another username.</FieldError> */}
-                          </Field>
-                        </FieldGroup>
-                        <Button type="submit" className="self-end">
-                          Add Task
-                        </Button>
-                      </fetcher.Form>
-                    </DialogContent>
-                  </Dialog>
+                  <AddTaskDialog />
                 </HoverCardTrigger>
                 <HoverCardContent
                   className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
@@ -196,6 +131,65 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
         </Card>
       </div>
     </main>
+  );
+}
+
+function AddTaskDialog() {
+  let fetcher = useFetcher();
+  // console.log("fetcher: ", fetcher);
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon-sm" className="rounded-full">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
+            />
+          </svg>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="dark">
+        <DialogHeader className="text-white">
+          <DialogTitle>Add Task</DialogTitle>
+        </DialogHeader>
+        <fetcher.Form
+          method="post"
+          className="flex flex-col gap-8 items-start"
+          onSubmit={() => console.log("submitted form")}
+          action="/action/tasks"
+        >
+          <FieldGroup className="text-white">
+            <Field>
+              <FieldLabel htmlFor="title">Title</FieldLabel>
+              <Input id="title" autoComplete="off" required name="title" />
+              {/* <FieldDescription>
+                              This appears on invoices and emails.
+                            </FieldDescription> */}
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="description">
+                Description (optional)
+              </FieldLabel>
+              <Input id="description" autoComplete="off" name="description" />
+              {/* <FieldError>Choose another username.</FieldError> */}
+            </Field>
+          </FieldGroup>
+          <Button type="submit" className="self-end">
+            Add Task
+          </Button>
+        </fetcher.Form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
