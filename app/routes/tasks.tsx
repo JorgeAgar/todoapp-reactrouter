@@ -201,16 +201,7 @@ function AddTaskDialog() {
   );
 }
 
-type tasks = {
-  id: string;
-  title: string;
-  description: string | null;
-  completedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deadline: string | null;
-  userId: string;
-};
+type tasks = typeof task.$inferInsert;
 function TasksCompleted({ tasks }: { tasks: tasks[] }) {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
 
