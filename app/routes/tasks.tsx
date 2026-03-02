@@ -137,11 +137,12 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
 }
 
 function AddTaskDialog() {
+  const [open, setOpen] = useState(false);
   let fetcher = useFetcher();
   // console.log("fetcher: ", fetcher);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon-sm" className="rounded-full">
           <svg
@@ -167,7 +168,7 @@ function AddTaskDialog() {
         <fetcher.Form
           method="post"
           className="flex flex-col gap-8 items-start"
-          onSubmit={() => console.log("submitted form")}
+          onSubmit={(event) => setOpen(false)}
           action="/action/tasks"
         >
           <FieldGroup className="text-white">
