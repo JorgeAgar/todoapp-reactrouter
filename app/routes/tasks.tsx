@@ -120,8 +120,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
                 .map((task) => (
                   <li key={task.id}>
                     <TaskCard
-                      title={task.title}
-                      description={task.description || ""}
+                      task={task}
                     />
                   </li>
                 ))}
@@ -201,8 +200,8 @@ function AddTaskDialog() {
   );
 }
 
-type tasks = typeof task.$inferInsert;
-function TasksCompleted({ tasks }: { tasks: tasks[] }) {
+type taskType = typeof task.$inferInsert;
+function TasksCompleted({ tasks }: { tasks: taskType[] }) {
   const [open, setOpen] = useState(false); // Tasks completed collapsible state
 
   return (
@@ -218,9 +217,7 @@ function TasksCompleted({ tasks }: { tasks: tasks[] }) {
             .map((task) => (
               <li key={task.id}>
                 <TaskCard
-                  title={task.title}
-                  description={task.description || ""}
-                  completed
+                  task={task}
                 />
               </li>
             ))}
@@ -307,16 +304,9 @@ export function AvatarDropdown() {
   );
 }
 
-function TaskCard({
-  title,
-  description,
-  completed = false,
-}: {
-  title: string;
-  description: string;
-  completed?: boolean;
-}) {
-  const [checked, setChecked] = useState(completed);
+function TaskCard({ task }: { task: taskType }) {
+  const [checked, setChecked] = useState(task.completedAt != null);
+  let fetcher = useFetcher();
 
   return (
     // @ts-expect-error I think it expects types from radix ui but i used base ui (from shadcn)
@@ -326,16 +316,16 @@ function TaskCard({
           className="size-5"
           onCheckedChange={(checkedState) => {
             setChecked(!checked);
-            console.log("Task ", title, " set to ", checkedState);
+            console.log("Task ", task.title, " set to ", checkedState);
           }}
           checked={checked}
         />
       </ItemMedia>
       <ItemContent>
-        <ItemTitle className={completed ? "line-through" : ""}>
-          {title}
+        <ItemTitle className={checked ? "line-through" : ""}>
+          {task.title}
         </ItemTitle>
-        {description && <ItemDescription>{description}</ItemDescription>}
+        {task.description && <ItemDescription>{task.description}</ItemDescription>}
       </ItemContent>
       <ItemActions>
         <DropdownMenu>
@@ -364,7 +354,7 @@ function TaskCard({
           <DropdownMenuContent className="dark">
             <DropdownMenuGroup>
               <DropdownMenuItem
-                onClick={() => console.log("editing task ", title)}
+                onClick={() => console.log("editing task ", task.title)}
               >
                 Edit
               </DropdownMenuItem>
@@ -373,7 +363,7 @@ function TaskCard({
             <DropdownMenuGroup>
               <DropdownMenuItem
                 variant="destructive"
-                onClick={() => console.log("deleted task ", title)}
+                onClick={() => console.log("deleted task ", task.title)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
