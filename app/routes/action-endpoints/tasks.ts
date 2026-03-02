@@ -3,21 +3,20 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import type { Route } from "../+types/tasks";
 
+type task = typeof task.$inferInsert;
+
 export async function action({ request }: Route.ActionArgs) {
   // console.log("llegó la action");
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) throw new Response("Unauthorized", { status: 401 });
 
   if (request.method === "POST") {
     const formData = await request.formData();
   // console.log("Form data: ", formData);
 
-  type NewTask = typeof task.$inferInsert;
-
-  const session = await auth.api.getSession({ headers: request.headers });
-  if (!session) throw new Response("Unauthorized", { status: 401 });
-
   const now = Date.now().toString();
 
-  const newTask: NewTask = {
+  const newTask: task = {
     title: formData.get("title") as string,
     description: (formData.get("description") as string) || null,
     userId: session.user.id,
@@ -33,8 +32,8 @@ export async function action({ request }: Route.ActionArgs) {
   await db.insert(task).values(newTask);
 
   return null;
-  } else if (request.method === "DELETE") {
-
+  } else if (request.method === "PATCH") {
+    const formData = await request.formData();
   }
   throw new Response("Method Not Allowed", { status: 405 });
 }
