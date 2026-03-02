@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -186,6 +187,9 @@ function AddTaskDialog() {
             </Field>
           </FieldGroup>
           <DialogFooter className="flex flex-row justify-end w-full">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">Cancel</Button>
+            </DialogClose>
             <Button type="submit" className="self-end">
               Add Task
             </Button>
