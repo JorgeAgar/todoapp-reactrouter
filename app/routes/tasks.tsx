@@ -82,12 +82,13 @@ export async function loader({ request }: { request: Request }) {
     .where(eq(task.userId, session.user.id));
   if (tasks) console.log("Queried tasks");
 
-  return tasks;
+  return { tasks, user: session.user };
 }
 
 export default function Tasks({ loaderData }: Route.ComponentProps) {
-  const tasks = loaderData;
+  const { tasks, user } = loaderData;
 
+  // console.log("Loaded tasks for user:", user);
   // console.log("Tasks:", tasks);
 
   return (
