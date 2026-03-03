@@ -273,12 +273,16 @@ export function AvatarDropdown({ user }: { user: user }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage src={user?.image || undefined} alt="User profile picture" />
-            <AvatarFallback>{user?.name?.substring(0, 1).toUpperCase() || "?"}</AvatarFallback>
+            <AvatarImage src={user.image || undefined} alt="User profile picture" />
+            <AvatarFallback>{user.name.substring(0, 1).toUpperCase() || "?"}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-32 dark">
+        <DropdownMenuGroup>
+          <DropdownMenuItem>{user.name}</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
