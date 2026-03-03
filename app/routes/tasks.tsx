@@ -67,7 +67,7 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
-import { useNavigate, useFetcher } from "react-router";
+import { useNavigate, useFetcher, useSubmit } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
@@ -320,7 +320,7 @@ export function AvatarDropdown({ user }: { user: user }) {
 
 function TaskCard({ task }: { task: taskType }) {
   const [checked, setChecked] = useState(task.completedAt != null);
-  let fetcher = useFetcher();
+  let submit = useSubmit();
 
   return (
     // @ts-expect-error I think it expects types from radix ui but i used base ui (from shadcn)
@@ -331,6 +331,13 @@ function TaskCard({ task }: { task: taskType }) {
           onCheckedChange={(checkedState) => {
             setChecked(!checked);
             console.log("Task ", task.title, " set to ", checkedState);
+            submit(
+              {
+                id: task.id,
+                completed: checkedState,
+              },
+              { method: "PATCH", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+            );
           }}
           checked={checked}
         />
