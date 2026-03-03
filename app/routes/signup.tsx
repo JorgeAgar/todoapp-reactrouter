@@ -1,4 +1,4 @@
-import { Form } from "react-router";
+import { Form, useNavigate } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -28,9 +28,13 @@ export default function Signup() {
 }
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+
+  let navigate = useNavigate();
+
   const signUp = async () => {
     await authClient.signUp.email(
       {
@@ -45,6 +49,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         },
         onSuccess: (ctx) => {
           console.log("User signed up successfully", ctx.data);
+          navigate("/tasks");
         },
         onError: (ctx) => {
           alert(ctx.error);
