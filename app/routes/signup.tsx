@@ -48,7 +48,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           // show loading state
         },
         onSuccess: (ctx) => {
-          console.log("User signed up successfully", ctx.data);
+          // console.log("User signed up successfully", ctx.data);
           navigate("/tasks");
         },
         onError: (ctx) => {
@@ -119,7 +119,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   Sign up with Google
                 </Button>
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="#">Sign in</a>
+                  Already have an account? <a href="/login">Sign in</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
