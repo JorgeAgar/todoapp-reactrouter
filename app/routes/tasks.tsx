@@ -93,7 +93,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="w-full h-svh bg-black">
-      <Header />
+      <Header user={user} />
       <div className="bg-black w-full h-full flex items-center justify-center p-4">
         <Card className="dark w-xl">
           <CardHeader className="flex flex-row justify-between items-center content-center">
@@ -227,7 +227,17 @@ function TasksCompleted({ tasks }: { tasks: taskType[] }) {
   );
 }
 
-function Header() {
+type user = {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    email: string;
+    emailVerified: boolean;
+    name: string;
+    image?: string | null | undefined;
+}
+
+function Header({ user }: { user: user }) {
   return (
     <header className="w-full flex flex-row justify-between items-center bg-black h-12 px-3">
       <Button
@@ -250,12 +260,12 @@ function Header() {
           />
         </svg>
       </Button>
-      <AvatarDropdown />
+      <AvatarDropdown user={user} />
     </header>
   );
 }
 
-export function AvatarDropdown() {
+export function AvatarDropdown({ user }: { user: user }) {
   let navigate = useNavigate();
 
   return (
@@ -263,8 +273,8 @@ export function AvatarDropdown() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={user?.image || undefined} alt="User profile picture" />
+            <AvatarFallback>{user?.name?.substring(0, 1).toUpperCase() || "?"}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
