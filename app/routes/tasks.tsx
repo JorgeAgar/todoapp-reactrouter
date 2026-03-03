@@ -384,7 +384,12 @@ function TaskCard({ task }: { task: taskType }) {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 variant="destructive"
-                onClick={() => console.log("deleted task ", task.title)}
+                onClick={() => {console.log("deleted task ", task.title);
+                  submit(
+                    { id: task.id },
+                    { method: "DELETE", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+                  );
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

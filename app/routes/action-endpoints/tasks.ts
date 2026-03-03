@@ -48,6 +48,12 @@ export async function action({ request }: Route.ActionArgs) {
       .where(eq(task.id, taskId));
     
     return null;
+  } else if (request.method === "DELETE") {
+    const formData = await request.formData();
+    const taskId = formData.get("id") as string;
+
+    await db.delete(task).where(eq(task.id, taskId));
+    return null;
   }
   throw new Response("Method Not Allowed", { status: 405 });
 }
