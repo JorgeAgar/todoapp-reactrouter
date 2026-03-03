@@ -67,7 +67,7 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
-import { useNavigate, useFetcher } from "react-router";
+import { useNavigate, useFetcher, useSubmit } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
@@ -93,7 +93,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="w-full h-svh bg-black">
-      <Header />
+      <Header user={user} />
       <div className="bg-black w-full h-full flex items-center justify-center p-4">
         <Card className="dark w-xl">
           <CardHeader className="flex flex-row justify-between items-center content-center">
@@ -227,7 +227,17 @@ function TasksCompleted({ tasks }: { tasks: taskType[] }) {
   );
 }
 
-function Header() {
+type user = {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    email: string;
+    emailVerified: boolean;
+    name: string;
+    image?: string | null | undefined;
+}
+
+function Header({ user }: { user: user }) {
   return (
     <header className="w-full flex flex-row justify-between items-center bg-black h-12 px-3">
       <Button
@@ -250,12 +260,12 @@ function Header() {
           />
         </svg>
       </Button>
-      <AvatarDropdown />
+      <AvatarDropdown user={user} />
     </header>
   );
 }
 
-export function AvatarDropdown() {
+export function AvatarDropdown({ user }: { user: user }) {
   let navigate = useNavigate();
 
   return (
@@ -263,12 +273,16 @@ export function AvatarDropdown() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={user.image || undefined} alt="User profile picture" />
+            <AvatarFallback>{user.name.substring(0, 1).toUpperCase() || "?"}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-32 dark">
+        <DropdownMenuGroup>
+          <DropdownMenuItem>{user.name}</DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>Settings</DropdownMenuItem>
         </DropdownMenuGroup>
@@ -306,7 +320,7 @@ export function AvatarDropdown() {
 
 function TaskCard({ task }: { task: taskType }) {
   const [checked, setChecked] = useState(task.completedAt != null);
-  let fetcher = useFetcher();
+  let submit = useSubmit();
 
   return (
     // @ts-expect-error I think it expects types from radix ui but i used base ui (from shadcn)
@@ -317,6 +331,13 @@ function TaskCard({ task }: { task: taskType }) {
           onCheckedChange={(checkedState) => {
             setChecked(!checked);
             console.log("Task ", task.title, " set to ", checkedState);
+            submit(
+              {
+                id: task.id,
+                completed: checkedState,
+              },
+              { method: "PATCH", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+            );
           }}
           checked={checked}
         />
@@ -363,7 +384,12 @@ function TaskCard({ task }: { task: taskType }) {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 variant="destructive"
-                onClick={() => console.log("deleted task ", task.title)}
+                onClick={() => {console.log("deleted task ", task.title);
+                  submit(
+                    { id: task.id },
+                    { method: "DELETE", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+                  );
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

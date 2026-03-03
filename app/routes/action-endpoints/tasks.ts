@@ -2,6 +2,8 @@ import { auth } from "~/lib/auth";
 import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import type { Route } from "../+types/tasks";
+import { eq } from "drizzle-orm";
+import { redirect } from "react-router";
 
 type task = typeof task.$inferInsert;
 
@@ -34,6 +36,24 @@ export async function action({ request }: Route.ActionArgs) {
   return null;
   } else if (request.method === "PATCH") {
     const formData = await request.formData();
+    const taskId = formData.get("id") as string;
+    const completed = formData.get("completed") === "true";
+    const now = Date.now().toString();
+    const completedAt = completed ? now : null;
+
+    // console.log("Form data for PATCH: ", formData);
+
+    await db.update(task)
+      .set({ updatedAt: now, completedAt: completedAt })
+      .where(eq(task.id, taskId));
+    
+    return null;
+  } else if (request.method === "DELETE") {
+    const formData = await request.formData();
+    const taskId = formData.get("id") as string;
+
+    await db.delete(task).where(eq(task.id, taskId));
+    return null;
   }
   throw new Response("Method Not Allowed", { status: 405 });
 }
