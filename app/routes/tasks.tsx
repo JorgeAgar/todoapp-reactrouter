@@ -60,6 +60,14 @@ import {
   FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { auth } from "~/lib/auth";
 import { authClient } from "~/lib/auth-client";
@@ -91,6 +99,9 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
   // console.log("Loaded tasks for user:", user);
   // console.log("Tasks:", tasks);
 
+  const tasksCompleted = tasks.filter((task) => task.completedAt != null);
+  const tasksNotCompleted = tasks.filter((task) => !task.completedAt);
+
   return (
     <main className="w-full h-svh bg-black">
       <Header user={user} />
@@ -114,24 +125,41 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             </CardAction>
           </CardHeader>
           <CardContent>
-            <ul className="flex flex-col gap-2">
-              {tasks
-                .filter((task) => !task.completedAt)
-                .map((task) => (
+            {tasksNotCompleted.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {tasksNotCompleted.map((task) => (
                   <li key={task.id}>
-                    <TaskCard
-                      task={task}
-                    />
+                    <TaskCard task={task} />
                   </li>
                 ))}
-            </ul>
+              </ul>
+            ) : (
+              <EmptyState />
+            )}
           </CardContent>
           <CardFooter>
-            <TasksCompleted tasks={tasks} />
+            <TasksCompleted tasks={tasksCompleted} />
           </CardFooter>
         </Card>
       </div>
     </main>
+  );
+}
+
+function EmptyState() {
+  return (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          {checkCircle}
+        </EmptyMedia>
+        {/* <EmptyTitle>No data</EmptyTitle> */}
+        <EmptyDescription>All tasks completed!</EmptyDescription>
+      </EmptyHeader>
+      {/* <EmptyContent>
+        <Button>Add data</Button>
+      </EmptyContent> */}
+    </Empty>
   );
 }
 
@@ -188,7 +216,9 @@ function AddTaskDialog() {
           </FieldGroup>
           <DialogFooter className="flex flex-row justify-end w-full">
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancel</Button>
+              <Button type="button" variant="secondary">
+                Cancel
+              </Button>
             </DialogClose>
             <Button type="submit" className="self-end">
               Add Task
@@ -212,15 +242,11 @@ function TasksCompleted({ tasks }: { tasks: taskType[] }) {
       </CollapsibleTrigger>
       <CollapsibleContent>
         <ul className="flex flex-col gap-2 mt-2">
-          {tasks
-            .filter((task) => task.completedAt != null)
-            .map((task) => (
-              <li key={task.id}>
-                <TaskCard
-                  task={task}
-                />
-              </li>
-            ))}
+          {tasks.map((task) => (
+            <li key={task.id}>
+              <TaskCard task={task} />
+            </li>
+          ))}
         </ul>
       </CollapsibleContent>
     </Collapsible>
@@ -228,14 +254,14 @@ function TasksCompleted({ tasks }: { tasks: taskType[] }) {
 }
 
 type user = {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    email: string;
-    emailVerified: boolean;
-    name: string;
-    image?: string | null | undefined;
-}
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  image?: string | null | undefined;
+};
 
 function Header({ user }: { user: user }) {
   return (
@@ -273,8 +299,13 @@ export function AvatarDropdown({ user }: { user: user }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage src={user.image || undefined} alt="User profile picture" />
-            <AvatarFallback>{user.name.substring(0, 1).toUpperCase() || "?"}</AvatarFallback>
+            <AvatarImage
+              src={user.image || undefined}
+              alt="User profile picture"
+            />
+            <AvatarFallback>
+              {user.name.substring(0, 1).toUpperCase() || "?"}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -336,7 +367,12 @@ function TaskCard({ task }: { task: taskType }) {
                 id: task.id,
                 completed: checkedState,
               },
-              { method: "PATCH", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+              {
+                method: "PATCH",
+                action: `/action/tasks`,
+                preventScrollReset: true,
+                navigate: false,
+              },
             );
           }}
           checked={checked}
@@ -346,7 +382,9 @@ function TaskCard({ task }: { task: taskType }) {
         <ItemTitle className={checked ? "line-through" : ""}>
           {task.title}
         </ItemTitle>
-        {task.description && <ItemDescription>{task.description}</ItemDescription>}
+        {task.description && (
+          <ItemDescription>{task.description}</ItemDescription>
+        )}
       </ItemContent>
       <ItemActions>
         <DropdownMenu>
@@ -384,10 +422,16 @@ function TaskCard({ task }: { task: taskType }) {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 variant="destructive"
-                onClick={() => {console.log("deleted task ", task.title);
+                onClick={() => {
+                  console.log("deleted task ", task.title);
                   submit(
                     { id: task.id },
-                    { method: "DELETE", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+                    {
+                      method: "DELETE",
+                      action: `/action/tasks`,
+                      preventScrollReset: true,
+                      navigate: false,
+                    },
                   );
                 }}
               >
@@ -447,4 +491,10 @@ const chevronUp = (
       d="m4.5 15.75 7.5-7.5 7.5 7.5"
     />
   </svg>
+);
+
+const checkCircle = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+</svg>
 );
