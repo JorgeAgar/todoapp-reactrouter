@@ -117,16 +117,17 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             </CardAction>
           </CardHeader>
           <CardContent>
-            <ul className="flex flex-col gap-2">
-              {tasksNotCompleted
-                .map((task) => (
+            {tasksNotCompleted.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {tasksNotCompleted.map((task) => (
                   <li key={task.id}>
-                    <TaskCard
-                      task={task}
-                    />
+                    <TaskCard task={task} />
                   </li>
                 ))}
-            </ul>
+              </ul>
+            ) : (
+              <span>empty</span>
+            )}
           </CardContent>
           <CardFooter>
             <TasksCompleted tasks={tasksCompleted} />
@@ -190,7 +191,9 @@ function AddTaskDialog() {
           </FieldGroup>
           <DialogFooter className="flex flex-row justify-end w-full">
             <DialogClose asChild>
-              <Button type="button" variant="secondary">Cancel</Button>
+              <Button type="button" variant="secondary">
+                Cancel
+              </Button>
             </DialogClose>
             <Button type="submit" className="self-end">
               Add Task
@@ -214,14 +217,11 @@ function TasksCompleted({ tasks }: { tasks: taskType[] }) {
       </CollapsibleTrigger>
       <CollapsibleContent>
         <ul className="flex flex-col gap-2 mt-2">
-          {tasks
-            .map((task) => (
-              <li key={task.id}>
-                <TaskCard
-                  task={task}
-                />
-              </li>
-            ))}
+          {tasks.map((task) => (
+            <li key={task.id}>
+              <TaskCard task={task} />
+            </li>
+          ))}
         </ul>
       </CollapsibleContent>
     </Collapsible>
@@ -229,14 +229,14 @@ function TasksCompleted({ tasks }: { tasks: taskType[] }) {
 }
 
 type user = {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    email: string;
-    emailVerified: boolean;
-    name: string;
-    image?: string | null | undefined;
-}
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  image?: string | null | undefined;
+};
 
 function Header({ user }: { user: user }) {
   return (
@@ -274,8 +274,13 @@ export function AvatarDropdown({ user }: { user: user }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Avatar>
-            <AvatarImage src={user.image || undefined} alt="User profile picture" />
-            <AvatarFallback>{user.name.substring(0, 1).toUpperCase() || "?"}</AvatarFallback>
+            <AvatarImage
+              src={user.image || undefined}
+              alt="User profile picture"
+            />
+            <AvatarFallback>
+              {user.name.substring(0, 1).toUpperCase() || "?"}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -337,7 +342,12 @@ function TaskCard({ task }: { task: taskType }) {
                 id: task.id,
                 completed: checkedState,
               },
-              { method: "PATCH", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+              {
+                method: "PATCH",
+                action: `/action/tasks`,
+                preventScrollReset: true,
+                navigate: false,
+              },
             );
           }}
           checked={checked}
@@ -347,7 +357,9 @@ function TaskCard({ task }: { task: taskType }) {
         <ItemTitle className={checked ? "line-through" : ""}>
           {task.title}
         </ItemTitle>
-        {task.description && <ItemDescription>{task.description}</ItemDescription>}
+        {task.description && (
+          <ItemDescription>{task.description}</ItemDescription>
+        )}
       </ItemContent>
       <ItemActions>
         <DropdownMenu>
@@ -385,10 +397,16 @@ function TaskCard({ task }: { task: taskType }) {
             <DropdownMenuGroup>
               <DropdownMenuItem
                 variant="destructive"
-                onClick={() => {console.log("deleted task ", task.title);
+                onClick={() => {
+                  console.log("deleted task ", task.title);
                   submit(
                     { id: task.id },
-                    { method: "DELETE", action: `/action/tasks`, preventScrollReset: true, navigate: false }
+                    {
+                      method: "DELETE",
+                      action: `/action/tasks`,
+                      preventScrollReset: true,
+                      navigate: false,
+                    },
                   );
                 }}
               >
