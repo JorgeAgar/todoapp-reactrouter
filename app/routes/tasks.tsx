@@ -91,6 +91,9 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
   // console.log("Loaded tasks for user:", user);
   // console.log("Tasks:", tasks);
 
+  const tasksCompleted = tasks.filter((task) => task.completedAt != null);
+  const tasksNotCompleted = tasks.filter((task) => !task.completedAt);
+
   return (
     <main className="w-full h-svh bg-black">
       <Header user={user} />
@@ -115,8 +118,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
           </CardHeader>
           <CardContent>
             <ul className="flex flex-col gap-2">
-              {tasks
-                .filter((task) => !task.completedAt)
+              {tasksNotCompleted
                 .map((task) => (
                   <li key={task.id}>
                     <TaskCard
@@ -127,7 +129,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             </ul>
           </CardContent>
           <CardFooter>
-            <TasksCompleted tasks={tasks} />
+            <TasksCompleted tasks={tasksCompleted} />
           </CardFooter>
         </Card>
       </div>
@@ -213,7 +215,6 @@ function TasksCompleted({ tasks }: { tasks: taskType[] }) {
       <CollapsibleContent>
         <ul className="flex flex-col gap-2 mt-2">
           {tasks
-            .filter((task) => task.completedAt != null)
             .map((task) => (
               <li key={task.id}>
                 <TaskCard
