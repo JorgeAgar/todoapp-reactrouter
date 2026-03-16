@@ -111,17 +111,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             <CardTitle>Your Tasks</CardTitle>
             {/* <CardDescription>Group Description (optional)</CardDescription> */}
             <CardAction>
-              <HoverCard openDelay={1000} closeDelay={50}>
-                <HoverCardTrigger>
-                  <AddTaskDialog />
-                </HoverCardTrigger>
-                <HoverCardContent
-                  className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
-                  side="right"
-                >
-                  Add task
-                </HoverCardContent>
-              </HoverCard>
+              <AddTask />
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -150,9 +140,7 @@ function EmptyState() {
   return (
     <Empty>
       <EmptyHeader>
-        <EmptyMedia variant="icon">
-          {checkCircle}
-        </EmptyMedia>
+        <EmptyMedia variant="icon">{checkCircle}</EmptyMedia>
         {/* <EmptyTitle>No data</EmptyTitle> */}
         <EmptyDescription>All tasks completed!</EmptyDescription>
       </EmptyHeader>
@@ -163,31 +151,41 @@ function EmptyState() {
   );
 }
 
-function AddTaskDialog() {
+function AddTask() {
   const [open, setOpen] = useState(false);
   let fetcher = useFetcher();
   // console.log("fetcher: ", fetcher);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="rounded-full">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-        </Button>
-      </DialogTrigger>
+      <HoverCard openDelay={1000} closeDelay={50}>
+        <HoverCardTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon-sm" className="rounded-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+            </Button>
+          </DialogTrigger>
+        </HoverCardTrigger>
+        <HoverCardContent
+          className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
+          side="right"
+        >
+          Add task
+        </HoverCardContent>
+      </HoverCard>
       <DialogContent className="dark">
         <DialogHeader className="text-white">
           <DialogTitle>Add Task</DialogTitle>
@@ -494,7 +492,18 @@ const chevronUp = (
 );
 
 const checkCircle = (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-</svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="size-6"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+    />
+  </svg>
 );
