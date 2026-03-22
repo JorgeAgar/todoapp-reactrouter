@@ -31,9 +31,14 @@ export async function action({ request }: Route.ActionArgs) {
 
   // console.log("Inserting new task: ", newTask);
 
-  await db.insert(task).values(newTask);
+  try {
+    await db.insert(task).values(newTask);
+  } catch (error) {
+    console.error("Error inserting task: ", error);
+    throw new Response("Internal Server Error", { status: 500 });
+  }
 
-  return null;
+  return { success: true };
   } else if (request.method === "PATCH") {
     const formData = await request.formData();
     const taskId = formData.get("id") as string;
