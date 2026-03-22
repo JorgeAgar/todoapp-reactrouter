@@ -68,6 +68,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner"
 import { Input } from "@/components/ui/input";
 import { auth } from "~/lib/auth";
 import { authClient } from "~/lib/auth-client";
@@ -218,8 +219,9 @@ function AddTask() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" className="self-end">
+            <Button type="submit" className="self-end" disabled={fetcher.state !== "idle"}>
               Add Task
+              {fetcher.state !== "idle" && <Spinner data-icon="inline-start" />}
             </Button>
           </DialogFooter>
         </fetcher.Form>
