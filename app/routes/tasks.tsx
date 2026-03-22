@@ -68,7 +68,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Spinner } from "@/components/ui/spinner"
+import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import { auth } from "~/lib/auth";
 import { authClient } from "~/lib/auth-client";
@@ -76,7 +76,7 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
-import { useNavigate, useFetcher, useSubmit } from "react-router";
+import { useNavigate, useFetcher, useSubmit, Link } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
@@ -219,7 +219,11 @@ function AddTask() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" className="self-end" disabled={fetcher.state !== "idle"}>
+            <Button
+              type="submit"
+              className="self-end"
+              disabled={fetcher.state !== "idle"}
+            >
               Add Task
               {fetcher.state !== "idle" && <Spinner data-icon="inline-start" />}
             </Button>
@@ -266,26 +270,28 @@ type user = {
 function Header({ user }: { user: user }) {
   return (
     <header className="w-full flex flex-row justify-between items-center bg-black h-12 px-3">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-white hover:bg-neutral-900 hover:text-white hover:transition-colors"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-6"
+      <Link to="/">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-white hover:bg-neutral-900 hover:text-white hover:transition-colors"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-          />
-        </svg>
-      </Button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+            />
+          </svg>
+        </Button>
+      </Link>
       <AvatarDropdown user={user} />
     </header>
   );
