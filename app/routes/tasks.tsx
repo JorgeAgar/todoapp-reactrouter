@@ -1,4 +1,5 @@
 import { useState } from "react";
+import clsx from "clsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -76,7 +77,7 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
-import { useNavigate, useFetcher, useSubmit, Link } from "react-router";
+import { useNavigate, useFetcher, useSubmit, Link, useNavigation } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
@@ -155,6 +156,7 @@ function EmptyState() {
 function AddTask() {
   let fetcher = useFetcher();
   const [open, setOpen] = useState(false);
+  console.log("addtask dialog state: ", open)
   // console.log("fetcher: ", fetcher);
   if(open && fetcher.state === "idle" && fetcher.data?.success) setOpen(false);
 
@@ -358,7 +360,12 @@ export function AvatarDropdown({ user }: { user: user }) {
 
 function TaskCard({ task }: { task: taskType }) {
   const [checked, setChecked] = useState(task.completedAt != null);
+  const [deleting, setDeleting] = useState(false);
   let submit = useSubmit();
+
+  // const navigation = useNavigation();
+  // console.log(`Task ${task.title} navigation state:`, navigation.state);
+  // console.log(`Task ${task.title} formAction: `, navigation.);
 
   return (
     // @ts-expect-error I think it expects types from radix ui but i used base ui (from shadcn)
@@ -383,14 +390,15 @@ function TaskCard({ task }: { task: taskType }) {
             );
           }}
           checked={checked}
+
         />
       </ItemMedia>
       <ItemContent>
-        <ItemTitle className={checked ? "line-through" : ""}>
+        <ItemTitle className={clsx(checked && 'line-through', deleting && 'opacity-50 italic')}>
           {task.title}
         </ItemTitle>
         {task.description && (
-          <ItemDescription>{task.description}</ItemDescription>
+          <ItemDescription className={clsx(deleting && 'opacity-50 italic')}>{task.description}</ItemDescription>
         )}
       </ItemContent>
       <ItemActions>
@@ -399,6 +407,7 @@ function TaskCard({ task }: { task: taskType }) {
             <Button
               variant="ghost"
               size="icon-xs"
+              disabled={deleting}
               className="-translate-y-3.5 group-hover:visible invisible"
             >
               <svg
@@ -440,7 +449,9 @@ function TaskCard({ task }: { task: taskType }) {
                       navigate: false,
                     },
                   );
+                  setDeleting(true);
                 }}
+                disabled={deleting}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -457,6 +468,7 @@ function TaskCard({ task }: { task: taskType }) {
                   />
                 </svg>
                 Delete
+                {deleting && <Spinner data-icon="inline-start" />}
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
