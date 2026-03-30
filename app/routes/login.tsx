@@ -51,7 +51,8 @@ export function LoginForm({
           console.log("User signed in successfully", ctx.data);
         },
         onError: (ctx) => {
-          alert(ctx.error);
+          console.error(ctx.error);
+          alert("Failed to sign in: " + ctx.error.message);
         },
       },
     );
