@@ -14,6 +14,7 @@ import {
   FieldLabel,
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "~/lib/auth-client";
 import { Form } from "react-router";
 import { useState } from "react";
@@ -35,6 +36,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const signIn = async () => {
     await authClient.signIn.email(
@@ -45,7 +47,7 @@ export function LoginForm({
       },
       {
         onRequest: (ctx) => {
-          // show loading state
+          setSubmitting(true);
         },
         onSuccess: (ctx) => {
           console.log("User signed in successfully", ctx.data);
@@ -98,7 +100,10 @@ export function LoginForm({
                 />
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? "Logging in" : "Login"}
+                  {submitting && <Spinner data-icon="inline-start" />}
+                </Button>
                 <Button variant="outline" type="button">
                   Login with Google
                 </Button>
