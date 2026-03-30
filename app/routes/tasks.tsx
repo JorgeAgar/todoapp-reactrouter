@@ -156,9 +156,13 @@ function EmptyState() {
 function AddTask() {
   let fetcher = useFetcher();
   const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   console.log("addtask dialog state: ", open)
   // console.log("fetcher: ", fetcher);
-  if(open && fetcher.state === "idle" && fetcher.data?.success) setOpen(false);
+  if(open && fetcher.state === "idle" && fetcher.data?.success && submitting) {
+    setOpen(false);
+    setSubmitting(false);
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -197,7 +201,7 @@ function AddTask() {
         <fetcher.Form
           method="post"
           className="flex flex-col gap-8 items-start"
-          // onSubmit={async (event) => {setOpen(fetcher.state !== "idle"); console.log(await fetcher.formData)}}
+          onSubmit={() => setSubmitting(true)}
           action="/action/tasks"
         >
           <FieldGroup className="text-white">
