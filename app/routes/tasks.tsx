@@ -1,4 +1,5 @@
 import { useState } from "react";
+import clsx from "clsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -68,6 +69,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import { auth } from "~/lib/auth";
 import { authClient } from "~/lib/auth-client";
@@ -75,14 +77,14 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
-import { useNavigate, useFetcher, useSubmit } from "react-router";
+import { useNavigate, useFetcher, useSubmit, Link, redirect } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
 
   // console.log("request: ", request);
 
-  if (!session) throw new Response("Unauthorized", { status: 401 });
+  if (!session) return redirect("/login");
 
   const tasks = await db
     .select()
@@ -111,17 +113,7 @@ export default function Tasks({ loaderData }: Route.ComponentProps) {
             <CardTitle>Your Tasks</CardTitle>
             {/* <CardDescription>Group Description (optional)</CardDescription> */}
             <CardAction>
-              <HoverCard openDelay={1000} closeDelay={50}>
-                <HoverCardTrigger>
-                  <AddTaskDialog />
-                </HoverCardTrigger>
-                <HoverCardContent
-                  className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
-                  side="right"
-                >
-                  Add task
-                </HoverCardContent>
-              </HoverCard>
+              <AddTask />
             </CardAction>
           </CardHeader>
           <CardContent>
@@ -150,9 +142,7 @@ function EmptyState() {
   return (
     <Empty>
       <EmptyHeader>
-        <EmptyMedia variant="icon">
-          {checkCircle}
-        </EmptyMedia>
+        <EmptyMedia variant="icon">{checkCircle}</EmptyMedia>
         {/* <EmptyTitle>No data</EmptyTitle> */}
         <EmptyDescription>All tasks completed!</EmptyDescription>
       </EmptyHeader>
@@ -163,31 +153,47 @@ function EmptyState() {
   );
 }
 
-function AddTaskDialog() {
-  const [open, setOpen] = useState(false);
+function AddTask() {
   let fetcher = useFetcher();
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  console.log("addtask dialog state: ", open)
   // console.log("fetcher: ", fetcher);
+  if(open && fetcher.state === "idle" && fetcher.data?.success && submitting) {
+    setOpen(false);
+    setSubmitting(false);
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon-sm" className="rounded-full">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4.5v15m7.5-7.5h-15"
-            />
-          </svg>
-        </Button>
-      </DialogTrigger>
+      <HoverCard openDelay={1000} closeDelay={50}>
+        <HoverCardTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon-sm" className="rounded-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+            </Button>
+          </DialogTrigger>
+        </HoverCardTrigger>
+        <HoverCardContent
+          className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
+          side="right"
+        >
+          Add task
+        </HoverCardContent>
+      </HoverCard>
       <DialogContent className="dark">
         <DialogHeader className="text-white">
           <DialogTitle>Add Task</DialogTitle>
@@ -195,7 +201,7 @@ function AddTaskDialog() {
         <fetcher.Form
           method="post"
           className="flex flex-col gap-8 items-start"
-          onSubmit={(event) => setOpen(false)}
+          onSubmit={() => setSubmitting(true)}
           action="/action/tasks"
         >
           <FieldGroup className="text-white">
@@ -220,8 +226,13 @@ function AddTaskDialog() {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" className="self-end">
+            <Button
+              type="submit"
+              className="self-end"
+              disabled={fetcher.state !== "idle"}
+            >
               Add Task
+              {fetcher.state !== "idle" && <Spinner data-icon="inline-start" />}
             </Button>
           </DialogFooter>
         </fetcher.Form>
@@ -266,26 +277,28 @@ type user = {
 function Header({ user }: { user: user }) {
   return (
     <header className="w-full flex flex-row justify-between items-center bg-black h-12 px-3">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-white hover:bg-neutral-900 hover:text-white hover:transition-colors"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-6"
+      <Link to="/">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-white hover:bg-neutral-900 hover:text-white hover:transition-colors"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-          />
-        </svg>
-      </Button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+            />
+          </svg>
+        </Button>
+      </Link>
       <AvatarDropdown user={user} />
     </header>
   );
@@ -351,7 +364,12 @@ export function AvatarDropdown({ user }: { user: user }) {
 
 function TaskCard({ task }: { task: taskType }) {
   const [checked, setChecked] = useState(task.completedAt != null);
+  const [deleting, setDeleting] = useState(false);
   let submit = useSubmit();
+
+  // const navigation = useNavigation();
+  // console.log(`Task ${task.title} navigation state:`, navigation.state);
+  // console.log(`Task ${task.title} formAction: `, navigation.);
 
   return (
     // @ts-expect-error I think it expects types from radix ui but i used base ui (from shadcn)
@@ -376,14 +394,15 @@ function TaskCard({ task }: { task: taskType }) {
             );
           }}
           checked={checked}
+
         />
       </ItemMedia>
       <ItemContent>
-        <ItemTitle className={checked ? "line-through" : ""}>
+        <ItemTitle className={clsx(checked && 'line-through', deleting && 'opacity-50 italic')}>
           {task.title}
         </ItemTitle>
         {task.description && (
-          <ItemDescription>{task.description}</ItemDescription>
+          <ItemDescription className={clsx(deleting && 'opacity-50 italic')}>{task.description}</ItemDescription>
         )}
       </ItemContent>
       <ItemActions>
@@ -392,6 +411,7 @@ function TaskCard({ task }: { task: taskType }) {
             <Button
               variant="ghost"
               size="icon-xs"
+              disabled={deleting}
               className="-translate-y-3.5 group-hover:visible invisible"
             >
               <svg
@@ -433,7 +453,9 @@ function TaskCard({ task }: { task: taskType }) {
                       navigate: false,
                     },
                   );
+                  setDeleting(true);
                 }}
+                disabled={deleting}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -450,6 +472,7 @@ function TaskCard({ task }: { task: taskType }) {
                   />
                 </svg>
                 Delete
+                {deleting && <Spinner data-icon="inline-start" />}
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -494,7 +517,18 @@ const chevronUp = (
 );
 
 const checkCircle = (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-</svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="size-6"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+    />
+  </svg>
 );
