@@ -77,14 +77,14 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import { eq } from "drizzle-orm";
 import type { Route } from "./+types/tasks";
-import { useNavigate, useFetcher, useSubmit, Link, useNavigation } from "react-router";
+import { useNavigate, useFetcher, useSubmit, Link, redirect } from "react-router";
 
 export async function loader({ request }: { request: Request }) {
   const session = await auth.api.getSession({ headers: request.headers });
 
   // console.log("request: ", request);
 
-  if (!session) throw new Response("Unauthorized", { status: 401 });
+  if (!session) return redirect("/login");
 
   const tasks = await db
     .select()
