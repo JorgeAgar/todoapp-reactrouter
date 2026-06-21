@@ -15,7 +15,7 @@ import {
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { authClient } from "~/lib/auth-client";
-import { useState } from "react";
+import { useRef } from "react";
 
 export default function Signup() {
   return (
@@ -29,18 +29,20 @@ export default function Signup() {
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
+  const emailRef = useRef("");
+  const nameRef = useRef("");
+  const passwordRef = useRef("");
 
   let navigate = useNavigate();
 
-  const signUp = async () => {
+  const signUp = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     await authClient.signUp.email(
       {
-        email,
-        password,
-        name,
+        email: emailRef.current,
+        password: passwordRef.current,
+        name: nameRef.current,
         callbackURL: `${window.location.origin}/tasks`
       },
       {
@@ -75,7 +77,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 id="name"
                 type="text"
                 placeholder="John Doe"
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  nameRef.current = e.target.value;
+                }}
                 required
               />
             </Field>
@@ -85,7 +89,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 id="email"
                 type="email"
                 placeholder="m@example.com"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  emailRef.current = e.target.value;
+                }}
                 required
               />
               <FieldDescription>
@@ -99,7 +105,9 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 id="password"
                 type="password"
                 required
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  passwordRef.current = e.target.value;
+                }}
               />
               <FieldDescription>
                 Must be at least 8 characters long.

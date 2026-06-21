@@ -3,13 +3,16 @@ import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import type { Route } from "../+types/tasks";
 import { eq } from "drizzle-orm";
-import { redirect } from "react-router";
 
 type task = typeof task.$inferInsert;
 
 export async function action({ request }: Route.ActionArgs) {
   // console.log("llegó la action");
+  const t1 = performance.now();
   const session = await auth.api.getSession({ headers: request.headers });
+  const t2 = performance.now();
+  console.log(`Session retrieval took ${t2 - t1} ms.`);
+  // this is why this auth method isn't ideal for a todo
   if (!session) throw new Response("Unauthorized", { status: 401 });
 
   if (request.method === "POST") {

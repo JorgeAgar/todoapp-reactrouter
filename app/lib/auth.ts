@@ -5,7 +5,7 @@ import { schema } from "drizzle/src/db/schema";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-        provider: "libsql", // or "mysql", "sqlite"
+        provider: "sqlite",
         schema: schema
     }),
     session: {
