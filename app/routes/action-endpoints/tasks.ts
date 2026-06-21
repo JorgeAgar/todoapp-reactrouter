@@ -2,7 +2,7 @@ import { auth } from "~/lib/auth";
 import { db } from "drizzle/src/index";
 import { task } from "drizzle/src/db/schema";
 import type { Route } from "../+types/tasks";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 type task = typeof task.$inferInsert;
 
@@ -53,14 +53,15 @@ export async function action({ request }: Route.ActionArgs) {
 
     await db.update(task)
       .set({ updatedAt: now, completedAt: completedAt })
-      .where(eq(task.id, taskId));
+      .where(and(eq(task.id, taskId), eq(task.userId, session.user.id)));
     
     return null;
   } else if (request.method === "DELETE") {
     const formData = await request.formData();
     const taskId = formData.get("id") as string;
 
-    await db.delete(task).where(eq(task.id, taskId));
+    await db.delete(task)
+      .where(and(eq(task.id, taskId), eq(task.userId, session.user.id)));
     return null;
   }
   throw new Response("Method Not Allowed", { status: 405 });

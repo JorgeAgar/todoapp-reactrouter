@@ -38,6 +38,10 @@ Schema definitions live in `drizzle/src/db/schema.ts`.
 
 User-owned records use cascading deletes where defined in the schema.
 
+`drizzle/src/db/relations.ts` currently defines relation helpers for Better
+Auth user/session/account tables. Task and subtask foreign keys are defined in
+the schema, but relation helpers for those tables have not been added yet.
+
 ## Migrations
 
 Tracked migration files live under `drizzle/`. Migration metadata lives under

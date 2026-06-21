@@ -64,6 +64,10 @@ querying or mutating user-owned data.
 Client-side login, signup, and sign-out flows should go through
 `app/lib/auth-client.ts`.
 
+OAuth buttons may appear in the login and signup screens, but OAuth providers
+are not wired up yet. Treat email/password as the supported auth flow until the
+backlog item for OAuth is implemented.
+
 ## Working with Tasks
 
 The task list is loaded in `/tasks`, and mutations are routed through
@@ -73,10 +77,15 @@ When adding task features:
 
 - Keep the session check in the server action or loader.
 - Scope reads and writes to `session.user.id` where the task belongs to a user.
+  For task updates and deletes, filter by both `task.id` and `task.userId`.
 - Update the Drizzle schema and create a migration if the database shape
   changes.
 - Prefer React Router loaders/actions over ad hoc client fetch code for route
   data.
+
+Current task UI supports creating tasks, marking them complete or incomplete,
+and deleting them. Completed tasks render in a collapsible section. The edit
+menu item, deadlines, and subtasks are not implemented in the UI yet.
 
 ## UI Components
 

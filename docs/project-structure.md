@@ -35,14 +35,15 @@ Route modules live under `app/routes/` and are connected in `app/routes.ts`.
 - `login.tsx`: email/password login UI.
 - `signup.tsx`: email/password signup UI.
 - `action-endpoints/tasks.ts`: task mutation endpoint for create, complete,
-  and delete operations.
+  incomplete, and delete operations.
 - `auth-catcher.ts`: Better Auth catch-all handler for `/api/auth/*`.
 
 ## Database Files
 
 - `drizzle/src/index.ts`: Drizzle database client.
 - `drizzle/src/db/schema.ts`: database schema definitions.
-- `drizzle/src/db/relations.ts`: Drizzle relation definitions.
+- `drizzle/src/db/relations.ts`: Drizzle relation definitions currently used
+  by Better Auth tables.
 - `drizzle/*.sql`: tracked migration files.
 - `drizzle/meta/`: tracked Drizzle migration snapshots and journal metadata.
 

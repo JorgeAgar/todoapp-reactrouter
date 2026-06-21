@@ -49,8 +49,10 @@ Task mutations are handled by `/action/tasks`:
 - `PATCH`: updates completion state.
 - `DELETE`: deletes a task.
 
-The action endpoint checks the session before applying any mutation. New task
-features should preserve that boundary so users can only act on their own data.
+The action endpoint checks the session before applying any mutation. Updates and
+deletes are filtered by both task id and `session.user.id`, so a signed-in user
+cannot mutate another user's task by submitting a different id. New task
+features should preserve that boundary for every user-owned record.
 
 ## UI Layer
 
@@ -62,7 +64,7 @@ that owns it.
 ## Data Layer
 
 The Drizzle client is exported from `drizzle/src/index.ts`. Database tables are
-defined in `drizzle/src/db/schema.ts`; relations live in
-`drizzle/src/db/relations.ts`.
+defined in `drizzle/src/db/schema.ts`; currently defined relation helpers for
+Better Auth tables live in `drizzle/src/db/relations.ts`.
 
 The schema currently includes Better Auth tables and application task tables.
