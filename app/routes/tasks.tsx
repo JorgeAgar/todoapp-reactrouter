@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -156,13 +156,15 @@ function EmptyState() {
 function AddTask() {
   let fetcher = useFetcher();
   const [open, setOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  console.log("addtask dialog state: ", open)
+  const shouldCloseOnSuccess = useRef(false);
   // console.log("fetcher: ", fetcher);
-  if(open && fetcher.state === "idle" && fetcher.data?.success && submitting) {
-    setOpen(false);
-    setSubmitting(false);
-  }
+
+  useEffect(() => {
+    if (open && fetcher.state === "idle" && fetcher.data?.success && shouldCloseOnSuccess.current) {
+      setOpen(false);
+      shouldCloseOnSuccess.current = false;
+    }
+  }, [fetcher.data, fetcher.state, open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -201,7 +203,9 @@ function AddTask() {
         <fetcher.Form
           method="post"
           className="flex flex-col gap-8 items-start"
-          onSubmit={() => setSubmitting(true)}
+          onSubmit={() => {
+            shouldCloseOnSuccess.current = true;
+          }}
           action="/action/tasks"
         >
           <FieldGroup className="text-white">
