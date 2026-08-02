@@ -13,10 +13,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Item,
   ItemActions,
@@ -157,6 +158,11 @@ function AddTask() {
   let fetcher = useFetcher();
   const [open, setOpen] = useState(false);
   const shouldCloseOnSuccess = useRef(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  // Radix opens a tooltip on focus, and the dialog restores focus to this
+  // trigger when it closes — which would show the tooltip with the pointer
+  // nowhere near the button. Ignore that one open, until the pointer returns.
+  const ignoreFocusOpen = useRef(false);
   // console.log("fetcher: ", fetcher);
 
   useEffect(() => {
@@ -168,35 +174,58 @@ function AddTask() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <HoverCard openDelay={1000} closeDelay={50}>
-        <HoverCardTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-            </Button>
-          </DialogTrigger>
-        </HoverCardTrigger>
-        <HoverCardContent
-          className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
-          side="right"
+      <TooltipProvider>
+        <Tooltip
+          delayDuration={1000}
+          open={tooltipOpen}
+          onOpenChange={(next) => {
+            if (next && ignoreFocusOpen.current) return;
+            setTooltipOpen(next);
+          }}
         >
-          Add task
-        </HoverCardContent>
-      </HoverCard>
-      <DialogContent className="dark">
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="rounded-full"
+                onPointerMove={() => {
+                  ignoreFocusOpen.current = false;
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent
+            className="dark bg-popover text-popover-foreground rounded-md border shadow-md text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
+            side="right"
+            sideOffset={4}
+            showArrow={false}
+          >
+            Add task
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <DialogContent
+        className="dark"
+        onCloseAutoFocus={() => {
+          ignoreFocusOpen.current = true;
+        }}
+      >
         <DialogHeader className="text-white">
           <DialogTitle>Add Task</DialogTitle>
         </DialogHeader>
