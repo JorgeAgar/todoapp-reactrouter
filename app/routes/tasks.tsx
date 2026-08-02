@@ -13,10 +13,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Item,
   ItemActions,
@@ -168,34 +169,37 @@ function AddTask() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <HoverCard openDelay={1000} closeDelay={50}>
-        <HoverCardTrigger asChild>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-            </Button>
-          </DialogTrigger>
-        </HoverCardTrigger>
-        <HoverCardContent
-          className="dark text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
-          side="right"
-        >
-          Add task
-        </HoverCardContent>
-      </HoverCard>
+      <TooltipProvider>
+        <Tooltip delayDuration={1000}>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="icon-sm" className="rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent
+            className="dark text-xs font-normal w-fit h-fit py-1 px-2"
+            side="right"
+            sideOffset={6}
+          >
+            Add task
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DialogContent className="dark">
         <DialogHeader className="text-white">
           <DialogTitle>Add Task</DialogTitle>
