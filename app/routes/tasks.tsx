@@ -192,9 +192,10 @@ function AddTask() {
             </DialogTrigger>
           </TooltipTrigger>
           <TooltipContent
-            className="dark text-xs font-normal w-fit h-fit py-1 px-2"
+            className="dark bg-popover text-popover-foreground rounded-md border shadow-md text-xs font-normal w-fit h-fit py-1 px-2 -translate-y-1.5"
             side="right"
-            sideOffset={6}
+            sideOffset={4}
+            showArrow={false}
           >
             Add task
           </TooltipContent>
