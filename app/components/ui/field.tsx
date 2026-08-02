@@ -1,4 +1,3 @@
-import { useMemo } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "~/lib/utils"
@@ -83,7 +82,6 @@ function Field({
 }: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
   return (
     <div
-      role="group"
       data-slot="field"
       data-orientation={orientation}
       className={cn(fieldVariants({ orientation }), className)}
@@ -189,36 +187,40 @@ function FieldError({
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined>
 }) {
-  const content = useMemo(() => {
-    if (children) {
-      return children
-    }
-
-    if (!errors?.length) {
-      return null
-    }
-
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values(),
-    ]
-
-    if (uniqueErrors?.length == 1) {
-      return uniqueErrors[0]?.message
-    }
-
+  if (children) {
     return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
-        )}
-      </ul>
+      <div
+        role="alert"
+        data-slot="field-error"
+        className={cn("text-destructive text-sm font-normal", className)}
+        {...props}
+      >
+        {children}
+      </div>
     )
-  }, [children, errors])
+  }
 
-  if (!content) {
+  if (!errors?.length) {
     return null
   }
+
+  const uniqueMessages = [...new Set(errors.map((error) => error?.message))]
+    .filter((message): message is string => Boolean(message))
+
+  if (!uniqueMessages.length) {
+    return null
+  }
+
+  const content =
+    uniqueMessages.length === 1 ? (
+      uniqueMessages[0]
+    ) : (
+      <ul className="ml-4 flex list-disc flex-col gap-1">
+        {uniqueMessages.map((message) => (
+          <li key={message}>{message}</li>
+        ))}
+      </ul>
+    )
 
   return (
     <div

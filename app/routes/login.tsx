@@ -17,7 +17,7 @@ import { Input } from "~/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { authClient } from "~/lib/auth-client";
 import { Form } from "react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function Login() {
   return (
@@ -34,15 +34,17 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
   const [submitting, setSubmitting] = useState(false);
 
-  const signIn = async () => {
+  const signIn = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     await authClient.signIn.email(
       {
-        email,
-        password,
+        email: emailRef.current,
+        password: passwordRef.current,
         callbackURL: `${window.location.origin}/tasks`
       },
       {
@@ -54,6 +56,7 @@ export function LoginForm({
         },
         onError: (ctx) => {
           console.error(ctx.error);
+          setSubmitting(false);
           alert("Failed to sign in: " + ctx.error.message);
         },
       },
@@ -78,25 +81,29 @@ export function LoginForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    emailRef.current = e.target.value;
+                  }}
                   required
                 />
               </Field>
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
+                  <button
+                    type="button"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?
-                  </a>
+                  </button>
                 </div>
                 <Input
                   id="password"
                   type="password"
                   required
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    passwordRef.current = e.target.value;
+                  }}
                 />
               </Field>
               <Field>
