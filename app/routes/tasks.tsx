@@ -158,6 +158,11 @@ function AddTask() {
   let fetcher = useFetcher();
   const [open, setOpen] = useState(false);
   const shouldCloseOnSuccess = useRef(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  // Radix opens a tooltip on focus, and the dialog restores focus to this
+  // trigger when it closes — which would show the tooltip with the pointer
+  // nowhere near the button. Ignore that one open, until the pointer returns.
+  const ignoreFocusOpen = useRef(false);
   // console.log("fetcher: ", fetcher);
 
   useEffect(() => {
@@ -170,10 +175,24 @@ function AddTask() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <TooltipProvider>
-        <Tooltip delayDuration={1000}>
+        <Tooltip
+          delayDuration={1000}
+          open={tooltipOpen}
+          onOpenChange={(next) => {
+            if (next && ignoreFocusOpen.current) return;
+            setTooltipOpen(next);
+          }}
+        >
           <TooltipTrigger asChild>
             <DialogTrigger asChild>
-              <Button variant="ghost" size="icon-sm" className="rounded-full">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="rounded-full"
+                onPointerMove={() => {
+                  ignoreFocusOpen.current = false;
+                }}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -201,7 +220,12 @@ function AddTask() {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <DialogContent className="dark">
+      <DialogContent
+        className="dark"
+        onCloseAutoFocus={() => {
+          ignoreFocusOpen.current = true;
+        }}
+      >
         <DialogHeader className="text-white">
           <DialogTitle>Add Task</DialogTitle>
         </DialogHeader>
